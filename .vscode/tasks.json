@@ -1,0 +1,147 @@
+{
+  "version": "2.0.0",
+  "tasks": [{
+      "type": "shell",
+      "label": "语法检查",
+      "command": "golangci-lint",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "run"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "编译项目",
+      "command": "go",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "build",
+        "-ldflags",
+        "-w",
+        "-o",
+        "${workspaceRoot}\\bin\\main.exe",
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "编译Worker",
+      "command": "go",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "build",
+        "-ldflags",
+        "-w",
+        "-o",
+        "${workspaceRoot}\\bin\\worker.exe",
+        "worker.go",
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "运行项目(生产环境)",
+      "command": "main.exe",
+      "options": {
+        "cwd": "${workspaceRoot}/bin",
+        "env": {}
+      },
+      "args": [
+        "-d",
+        "true"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["编译项目"]
+    },
+    {
+      "type": "shell",
+      "label": "一键发布(upx压缩)",
+      "command": "upx",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "-9",
+        "${workspaceRoot}\\bin\\main.exe"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["编译项目"]
+    },
+    {
+      "type": "shell",
+      "label": "生成火焰图(需要先运行)",
+      "command": "go-torch",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "-u",
+        "http://127.0.0.1:8078",        
+        "-t",
+        "30",      
+        "-f",
+        "./bin/debug/torch.svg"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "压力测试(go-wrk)",
+      "command": "go-wrk",
+      "options": {
+        "cwd": "${workspaceRoot}",
+        "env": {}
+      },
+      "args": [
+        "-c",
+        "100", 
+        "-t",
+        "1",   
+        "-n",
+        "1000",
+        "http://127.0.0.1:8078/demo/draw/try"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
